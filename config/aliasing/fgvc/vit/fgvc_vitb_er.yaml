@@ -1,0 +1,55 @@
+# Training Configuration
+run_name: vitb_fgvc_er_aliasinglabel # wandb will use this if not overridden
+output_dir: ./output
+seed: 42
+
+# --- WandB ---
+wandb_project: "HCL_fgvc_er_aliasing_label_vitb_cap1000_batch8_4"  # CHANGE THIS: Your W&B project name
+wandb_entity: "dudusama"      # CHANGE THIS: Your W&B username or team (optional)
+wandb_log_freq: 100               # Log model gradients/parameters every N batches with wandb.watch
+wandb_mode: "offline"              # "online", "offline", "disabled"
+
+# Data
+dataset: fgvc
+data_path: ./data
+batch_size: 8
+num_workers: 4
+shuffle_train: True
+num_tasks: 10
+num_classes: 100
+overlap_ratio: 0.2
+split_ratio: 0.2
+supervision: 'aliasing' # 'fine-grain' or 'full-label' or 'aliasing'
+
+# Model
+backbone_name: vit
+image_size: 224
+patch_size: 16
+pretrained_path: ./pretrained/dino_vitbase16_pretrain.pth
+freeze_backbone: False
+add_heads:
+  L1_head: 100
+  L2_head: 100
+  L3_head: 100
+primary_head: 'L3_head'
+
+# Training Loop
+epochs: 50
+optimizer: AdamW
+learning_rate: 0.0001
+weight_decay: 0.0001
+loss_function: 'multi_ce'
+loss_aggregation: 'mean' # 'mean' or 'sum' for multi-head loss
+
+# Evaluation
+eval_batch_size: 128
+
+# Logging (Python Logger)
+log_level: INFO
+log_interval: 100 # Log train loss to console/file every N batches
+eval_interval: 50 # Log performance to console/file every N batches
+
+# Memory Buffer
+memory_name: 'Reservoir' # Memory Buffer 的名称
+memory_capacity: 1000  # Memory Buffer 的总容量
+m_batch_size: 4        # Memory Buffer 的批次大小
